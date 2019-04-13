@@ -1,0 +1,37 @@
+{
+  "name": "javalon",
+  "version": "1.0.4",
+  "description": "javascript api for the avalon blockchain",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "avalon",
+    "blockchain",
+    "social",
+    "currency",
+    "crypto"
+  ],
+  "author": "Adrien M",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  },
+  "dependencies": {
+    "bs58": "^4.0.1",
+    "crypto-js": "^3.1.9-1",
+    "growint": "^1.0.1",
+    "node-fetch": "^2.3.0",
+    "randombytes": "^2.1.0",
+    "secp256k1": "^3.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skzap/javalon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/skzap/javalon/issues"
+  },
+  "homepage": "https://github.com/skzap/javalon#readme"
+}
