@@ -100,31 +100,33 @@ javalon.getNotifications('alice', (err, contents) => {
 
 ## POST API
 
+To send a transaction to the network, you will need multiple steps. First you need to define your transaction and sign it.
+
 ```
-    // first you need to define your transaction
-    var newTx = {
-        type: javalon.TransactionType.FOLLOW,
-        data: {
-            target: 'bob'
-        }
+var newTx = {
+    type: javalon.TransactionType.FOLLOW,
+    data: {
+        target: 'bob'
     }
+}
 
-    // then you sign it
-    newTx = javalon.sign(alice_key, 'alice', newTx)
-    // after this step, the transaction is forged with a timestamp, hash, and signature
-    // and the transaction needs to be sent in the next 60 secs or will be forever invalid
-    
-    // finally you send it with
-    javalon.sendTransaction(newTx, function(err, res) {
-        // and it should answer once the transaction is fully validated and included in a block !
-        cb(err, res)
-    })
+newTx = javalon.sign(alice_key, 'alice', newTx)
+```
+After this step, the transaction is forged with a timestamp, hash, and signature. This transaction needs to be sent in the next 60 secs or will be forever invalid.
 
-    // alternatively, if you just want to send the transaction without waiting for validation
-    javalon.sendRawTransaction(newTx, function(err, res) {
-        // and it will answer quickly with the current head block
-        cb(err, res)
-    })
+You can send it like so
+```
+javalon.sendTransaction(newTx, function(err, res) {
+    cb(err, res)
+})
+```
+The callback will return once your transaction has been included in a new block.
+
+Alternatively, you can just want the callback as soon as the receiving node has it, you can do:
+```
+javalon.sendRawTransaction(newTx, function(err, res) {
+    cb(err, res)
+})
 ```
 
 ## Convenience
