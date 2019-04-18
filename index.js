@@ -249,7 +249,7 @@ var avalon = {
         // hash the transaction
         tx.hash = CryptoJS.SHA256(JSON.stringify(tx)).toString()
         // sign the transaction
-        var signature = secp256k1.sign(new Buffer(tx.hash, 'hex'), bs58.decode(privKey))
+        var signature = secp256k1.sign(Buffer.from(tx.hash, 'hex'), bs58.decode(privKey))
         tx.signature = bs58.encode(signature.signature)
         return tx
     },
@@ -327,7 +327,8 @@ var avalon = {
     },
     randomNode: () => {
         var nodes = avalon.config.api
-        return nodes[Math.floor(Math.random()*nodes.length)]
+        if (typeof nodes === 'string') return nodes
+        else return nodes[Math.floor(Math.random()*nodes.length)]
     },
     votingPower: (account) => {
         return new GrowInt(account.vt, {growth:account.balance/(3600000)})
