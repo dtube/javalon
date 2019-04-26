@@ -216,6 +216,28 @@ var avalon = {
             cb(null, res)
         })
     },
+    getSchedule: (cb) => {
+        fetch(avalon.randomNode()+'/schedule', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        })
+    },
+    getLeaders: (cb) => {
+        fetch(avalon.randomNode()+'/allminers', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        })
+    },
     keypair: () => {
         let priv, pub
         do {
