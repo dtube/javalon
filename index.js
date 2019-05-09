@@ -86,25 +86,25 @@ var avalon = {
     generateCommentTree: (root, author, link) => {
         var replies = []
         var content = null
-        if (author === root.author && link === root.link) 
+        if (author === root.author && link === root.link)
             content = root
-        else 
+        else
             content = root.comments[author+'/'+link]
-        
+
         if (!content || !content.child || !root.comments) return []
         for (var i = 0; i < content.child.length; i++) {
             var comment = root.comments[content.child[i][0]+'/'+content.child[i][1]]
             comment.replies = avalon.generateCommentTree(root, comment.author, comment.link)
             comment.ups = 0
             comment.downs = 0
-            if (comment.votes) 
+            if (comment.votes)
                 for (let i = 0; i < comment.votes.length; i++) {
                     if (comment.votes[i].vt > 0)
                         comment.ups += comment.votes[i].vt
                     if (comment.votes[i].vt < 0)
                         comment.downs -= comment.votes[i].vt
                 }
-            
+
             comment.totals = comment.ups - comment.downs
             replies.push(comment)
         }
@@ -114,7 +114,7 @@ var avalon = {
         return replies
     },
     getDiscussionsByAuthor: (username, author, link, cb) => {
-        if (!author && !link) 
+        if (!author && !link)
             fetch(avalon.randomNode()+'/blog/'+username, {
                 method: 'get',
                 headers: {
@@ -124,7 +124,7 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        else 
+        else
             fetch(avalon.randomNode()+'/blog/'+username+'/'+author+'/'+link, {
                 method: 'get',
                 headers: {
@@ -134,10 +134,10 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        
+
     },
     getNewDiscussions: (author, link, cb) => {
-        if (!author && !link) 
+        if (!author && !link)
             fetch(avalon.randomNode()+'/new', {
                 method: 'get',
                 headers: {
@@ -147,7 +147,7 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        else 
+        else
             fetch(avalon.randomNode()+'/new/'+author+'/'+link, {
                 method: 'get',
                 headers: {
@@ -157,10 +157,10 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        
+
     },
     getHotDiscussions: (author, link, cb) => {
-        if (!author && !link) 
+        if (!author && !link)
             fetch(avalon.randomNode()+'/hot', {
                 method: 'get',
                 headers: {
@@ -170,7 +170,7 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        else 
+        else
             fetch(avalon.randomNode()+'/hot/'+author+'/'+link, {
                 method: 'get',
                 headers: {
@@ -180,10 +180,10 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        
+
     },
     getFeedDiscussions: (username, author, link, cb) => {
-        if (!author && !link) 
+        if (!author && !link)
             fetch(avalon.randomNode()+'/feed/'+username, {
                 method: 'get',
                 headers: {
@@ -193,7 +193,7 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        else 
+        else
             fetch(avalon.randomNode()+'/feed/'+username+'/'+author+'/'+link, {
                 method: 'get',
                 headers: {
@@ -203,10 +203,21 @@ var avalon = {
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
             })
-        
+
     },
     getNotifications: (username, cb) => {
         fetch(avalon.randomNode()+'/notifications/'+username, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        })
+    },
+    getRewardPool: (cb) => {
+        fetch(avalon.randomNode()+'/rewardpool', {
             method: 'get',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -244,9 +255,9 @@ var avalon = {
             priv = Buffer.from(randomBytes(32).buffer)
             pub = secp256k1.publicKeyCreate(priv)
         } while (!secp256k1.privateKeyVerify(priv))
-    
+
         return {
-            pub: bs58.encode(pub),        
+            pub: bs58.encode(pub),
             priv: bs58.encode(priv)
         }
     },
@@ -256,15 +267,15 @@ var avalon = {
                 bs58.decode(priv)))
     },
     sign: (privKey, sender, tx) => {
-        if (typeof tx !== 'object') 
+        if (typeof tx !== 'object')
             try {
                 tx = JSON.parse(tx)
             } catch(e) {
                 console.log('invalid transaction')
                 return
             }
-        
-        
+
+
         tx.sender = sender
         // add timestamp to seed the hash (avoid transactions reuse)
         tx.ts = new Date().getTime()
@@ -277,16 +288,16 @@ var avalon = {
     },
     sendTransaction: (tx, cb) => {
         avalon.sendRawTransaction(tx, function(error, headBlock) {
-            if (error) 
+            if (error)
                 cb(error)
-            else 
+            else
                 setTimeout(function() {
                     avalon.verifyTransaction(tx, headBlock, 5, function(error, block) {
                         if (error) console.log(error)
                         else cb(null, block)
                     })
                 }, 1500)
-            
+
         })
     },
     sendRawTransaction: (tx, cb) => {
@@ -298,16 +309,16 @@ var avalon = {
             },
             body: JSON.stringify(tx)
         }).then(function(res) {
-            if (res.status === 500) 
+            if (res.status === 500)
                 res.json().then(function(err) {
                     cb(err)
                 })
-            else 
+            else
                 res.text().then(function(headBlock) {
                     cb(null, parseInt(headBlock))
                 })
-            
-            
+
+
         })
     },
     verifyTransaction: (tx, headBlock, retries, cb) => {
@@ -330,21 +341,21 @@ var avalon = {
             }
 
             var isConfirmed = false
-            for (let i = 0; i < block.txs.length; i++) 
+            for (let i = 0; i < block.txs.length; i++)
                 if (block.txs[i].hash === tx.hash) {
                     isConfirmed = true
                     break
                 }
-            
 
-            if (isConfirmed) 
+
+            if (isConfirmed)
                 cb(null, block)
             else if (retries > 0) {
                 retries--
                 setTimeout(function(){avalon.verifyTransaction(tx, nextBlock, retries, cb)},3000)
-            } else 
+            } else
                 cb('Failed to find transaction up to block #'+nextBlock)
-            
+
         })
     },
     randomNode: () => {
@@ -377,7 +388,7 @@ var avalon = {
         PROMOTED_COMMENT: 13,
         TRANSFER_VT: 14,
         TRANSFER_BW: 15,
-    
+
     }
 }
 
