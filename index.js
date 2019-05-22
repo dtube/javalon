@@ -5,6 +5,12 @@ const bs58 = require('bs58')
 const GrowInt = require('growint')
 const fetch = require('node-fetch')
 
+function status(response) {   
+    if (response.ok)
+        return response
+    return response.json().then(res => Promise.reject(res))
+}
+
 var avalon = {
     config: {
         //api: ['https://api.avalon.wtf'],
@@ -57,8 +63,10 @@ var avalon = {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             }
-        }).then(res => res.json()).then(function(res) {
+        }).then(status).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(err) {
+            cb(err)
         })
     },
     getFollowing: (name, cb) => {
@@ -70,6 +78,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(err) {
+            cb(err)
         })
     },
     getFollowers: (name, cb) => {
@@ -81,6 +91,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(err) {
+            cb(err)
         })
     },
     generateCommentTree: (root, author, link) => {
@@ -172,6 +184,29 @@ var avalon = {
             })
         else 
             fetch(avalon.randomNode()+'/hot/'+author+'/'+link, {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json()).then(function(res) {
+                cb(null, res)
+            })
+        
+    },
+    getTrendingDiscussions: (author, link, cb) => {
+        if (!author && !link) 
+            fetch(avalon.randomNode()+'/trending', {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json()).then(function(res) {
+                cb(null, res)
+            })
+        else 
+            fetch(avalon.randomNode()+'/trending/'+author+'/'+link, {
                 method: 'get',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
