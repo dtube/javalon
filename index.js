@@ -4,6 +4,8 @@ const secp256k1 = require('secp256k1')
 const bs58 = require('bs58')
 const GrowInt = require('growint')
 const fetch = require('node-fetch')
+const bwGrowth = 10000000
+const vtGrowth = 360000000
 
 function status(response) {   
     if (response.ok)
@@ -399,11 +401,11 @@ var avalon = {
         else return nodes[Math.floor(Math.random()*nodes.length)]
     },
     votingPower: (account) => {
-        return new GrowInt(account.vt, {growth:account.balance/(3600000)})
+        return new GrowInt(account.vt, {growth:account.balance/(vtGrowth)})
             .grow(new Date().getTime()).v
     },
     bandwidth: (account) => {
-        return new GrowInt(account.bw, {growth:account.balance/(60000), max:1048576})
+        return new GrowInt(account.bw, {growth:account.balance/(bwGrowth), max:1048576})
             .grow(new Date().getTime()).v
     },
     TransactionType: {
