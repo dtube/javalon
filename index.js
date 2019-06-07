@@ -286,6 +286,17 @@ var avalon = {
             cb(null, res)
         })
     },
+    getRewards: (name, cb) => {
+        fetch(avalon.randomNode()+'/distributed/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        })
+    },
     keypair: () => {
         let priv, pub
         do {
