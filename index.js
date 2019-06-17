@@ -45,6 +45,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getAccounts: (names, cb) => {
@@ -56,6 +58,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getContent: (name, link, cb) => {
@@ -137,6 +141,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else 
             fetch(avalon.randomNode()+'/blog/'+username+'/'+author+'/'+link, {
@@ -147,6 +153,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         
     },
@@ -160,6 +168,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else 
             fetch(avalon.randomNode()+'/new/'+author+'/'+link, {
@@ -170,6 +180,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         
     },
@@ -183,6 +195,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else 
             fetch(avalon.randomNode()+'/hot/'+author+'/'+link, {
@@ -193,6 +207,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         
     },
@@ -206,6 +222,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else 
             fetch(avalon.randomNode()+'/trending/'+author+'/'+link, {
@@ -216,6 +234,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         
     },
@@ -229,6 +249,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else 
             fetch(avalon.randomNode()+'/feed/'+username+'/'+author+'/'+link, {
@@ -239,6 +261,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         
     },
@@ -251,6 +275,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getSchedule: (cb) => {
@@ -262,6 +288,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getLeaders: (cb) => {
@@ -273,6 +301,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getRewardPool: (cb) => {
@@ -284,6 +314,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getRewards: (name, cb) => {
@@ -295,6 +327,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     keypair: () => {
@@ -365,8 +399,6 @@ var avalon = {
                 res.text().then(function(headBlock) {
                     cb(null, parseInt(headBlock))
                 })
-            
-            
         })
     },
     verifyTransaction: (tx, headBlock, retries, cb) => {
