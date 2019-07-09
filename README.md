@@ -4,7 +4,7 @@
 #### Require style
 Install with `npm install --save javalon` inside your project. Then just
 ```
-const avalon = require('javalon')
+const javalon = require('javalon')
 ```
 #### CDN style
 If you are working in the browser and want to load javalon from a CDN:
