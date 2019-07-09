@@ -1,11 +1,11 @@
 var CryptoJS = require('crypto-js')
 var randomBytes = require('randombytes')
-const secp256k1 = require('secp256k1')
-const bs58 = require('bs58')
-const GrowInt = require('growint')
-const fetch = require('node-fetch')
-const bwGrowth = 10000000
-const vtGrowth = 360000000
+var secp256k1 = require('secp256k1')
+var bs58 = require('bs58')
+var GrowInt = require('growint')
+var fetch = require('node-fetch')
+var bwGrowth = 10000000
+var vtGrowth = 360000000
 
 function status(response) {   
     if (response.ok)
