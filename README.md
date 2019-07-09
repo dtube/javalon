@@ -1,12 +1,18 @@
 # Javalon
 
+## Install
+#### Require style
 Install with `npm install --save javalon` inside your project. Then just
-
 ```
 const javalon = require('javalon')
 ```
+#### CDN style
+If you are working in the browser and want to load javalon from a CDN:
+```
+<script src="https://unpkg.com/javalon/bin/javalon.min.js"></script>
+```
 
-By default, javalon hits on the main avalon testnet. You can eventually make javalon hit on your local node or any avalon node like so:
+By default, javalon hits on the main avalon testnet (https://avalon.d.tube). You can eventually make javalon hit on your local node or any avalon node like so:
 
 ```
 javalon.init({api: 'http://localhost:3001'})
