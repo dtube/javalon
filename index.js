@@ -470,5 +470,5 @@ var avalon = {
     }
 }
 
-if (window) window.avalon = avalon
+if (window) window.javalon = avalon
 module.exports = avalon
