@@ -1,4 +1,5 @@
 var CryptoJS = require('crypto-js')
+var eccrypto = require('eccrypto')
 var randomBytes = require('randombytes')
 var secp256k1 = require('secp256k1')
 var bs58 = require('bs58')
@@ -435,6 +436,68 @@ var avalon = {
                 cb('Failed to find transaction up to block #'+nextBlock)
             
         })
+    },
+    encrypt: (pub, message, ephemPriv, cb) => {
+        // if no ephemPriv is passed, a new random key is generated
+        if (!cb) {
+            cb = ephemPriv
+            ephemPriv = avalon.keypair().priv
+        }
+        try {
+            if (ephemPriv)
+                ephemPriv = bs58.decode(ephemPriv)
+            var pubBuffer = bs58.decode(pub)
+            eccrypto.encrypt(pubBuffer, Buffer.from(message), {
+                ephemPrivateKey: ephemPriv
+            }).then(function(encrypted) {
+                // reducing the encrypted buffers into base 58
+                encrypted.iv = bs58.encode(encrypted.iv)
+                // compress the sender's public key to compressed format
+                // shortens the encrypted string length
+                encrypted.ephemPublicKey = secp256k1.publicKeyConvert(encrypted.ephemPublicKey, true)
+                encrypted.ephemPublicKey = bs58.encode(encrypted.ephemPublicKey)
+                encrypted.ciphertext = bs58.encode(encrypted.ciphertext)
+                encrypted.mac = bs58.encode(encrypted.mac)
+                encrypted = [
+                    encrypted.iv,
+                    encrypted.ephemPublicKey,
+                    encrypted.ciphertext,
+                    encrypted.mac
+                ]
+                
+                // adding the _ separator character
+                encrypted = encrypted.join('_')
+                cb(null, encrypted)
+            }).catch(function(error) {
+                cb(error)
+            })
+        } catch (error) {
+            cb(error)
+        }
+    },
+    decrypt: (priv, encrypted, cb) => {
+        try {
+            // converting the encrypted string to an array of base58 encoded strings
+            encrypted = encrypted.split('_')
+            
+            // then to an object with the correct property names
+            var encObj = {}
+            encObj.iv = bs58.decode(encrypted[0])
+            encObj.ephemPublicKey = bs58.decode(encrypted[1])
+            encObj.ephemPublicKey = secp256k1.publicKeyConvert(encObj.ephemPublicKey, false)
+            encObj.ciphertext = bs58.decode(encrypted[2])
+            encObj.mac = bs58.decode(encrypted[3])
+
+            // and we decode it with our private key
+            var privBuffer = bs58.decode(priv)
+            eccrypto.decrypt(privBuffer, encObj).then(function(decrypted) {
+                cb(null, decrypted.toString())
+            }).catch(function(error) {
+                cb(error)
+            })
+        } catch (error) {
+            cb(error)
+        }
     },
     randomNode: () => {
         var nodes = avalon.config.api
