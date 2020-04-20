@@ -505,8 +505,10 @@ var avalon = {
         else return nodes[Math.floor(Math.random()*nodes.length)]
     },
     votingPower: (account) => {
-        return new GrowInt(account.vt, {growth:account.balance/(vtGrowth)})
-            .grow(new Date().getTime()).v
+        return new GrowInt(account.vt, {
+            growth:account.balance/(vtGrowth),
+            max: account.maxVt
+        }).grow(new Date().getTime()).v
     },
     bandwidth: (account) => {
         return new GrowInt(account.bw, {growth:account.balance/(bwGrowth), max:256000})
