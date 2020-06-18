@@ -48,6 +48,19 @@ var avalon = {
             cb(error)
         })
     },
+    getVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
     getAccounts: (names, cb) => {
         fetch(avalon.randomNode()+'/accounts/'+names.join(','), {
             method: 'get',
