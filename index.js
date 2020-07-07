@@ -381,20 +381,35 @@ var avalon = {
         return tx
     },
     sendTransaction: (tx, cb) => {
-        avalon.sendRawTransaction(tx, function(error, headBlock) {
-            if (error) 
-                cb(error)
+        // sends a transaction to a node
+        // waits for the transaction to be included in a block
+        // 200 with head block number if confirmed
+        // 408 if timeout
+        // 500 with error if transaction is invalid
+        fetch(avalon.randomNode()+'/transactWaitConfirm', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tx)
+        }).then(function(res) {
+            if (res.status === 500 || res.status === 408) 
+                res.json().then(function(err) {
+                    cb(err)
+                })
+            else if (res.status === 404)
+                cb({error: 'Avalon API is down'})
             else 
-                setTimeout(function() {
-                    avalon.verifyTransaction(tx, headBlock, 5, function(error, block) {
-                        if (error) console.log(error)
-                        else cb(null, block)
-                    })
-                }, 1500)
-            
+                res.text().then(function(headBlock) {
+                    cb(null, parseInt(headBlock))
+                })
         })
     },
     sendRawTransaction: (tx, cb) => {
+        // sends the transaction to a node
+        // 200 with head block number if transaction is valid and node added it to mempool
+        // 500 with error if transaction is invalid
         fetch(avalon.randomNode()+'/transact', {
             method: 'post',
             headers: {
@@ -411,6 +426,20 @@ var avalon = {
                 res.text().then(function(headBlock) {
                     cb(null, parseInt(headBlock))
                 })
+        })
+    },
+    sendTransactionDeprecated: (tx, cb) => {
+        // old and bad way of checking if a transaction is confirmed in a block
+        avalon.sendRawTransaction(tx, function(error, headBlock) {
+            if (error) 
+                cb(error)
+            else 
+                setTimeout(function() {
+                    avalon.verifyTransaction(tx, headBlock, 5, function(error, block) {
+                        if (error) console.log(error)
+                        else cb(null, block)
+                    })
+                }, 1500)
         })
     },
     verifyTransaction: (tx, headBlock, retries, cb) => {
