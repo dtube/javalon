@@ -573,7 +573,9 @@ var avalon = {
         PROMOTED_COMMENT: 13,
         TRANSFER_VT: 14,
         TRANSFER_BW: 15,
-    
+        LIMIT_VT: 16,
+        CLAIM_REWARD: 17,
+        ENABLE_NODE: 18
     }
 }
 
