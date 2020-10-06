@@ -113,6 +113,32 @@ var avalon = {
             cb(err)
         })
     },
+    getRewardsPending: (name, cb) => {
+        fetch(avalon.randomNode()+'/rewards/pending/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(err) {
+            cb(err)
+        })
+    },
+    getRewardsClaimed: (name, cb) => {
+        fetch(avalon.randomNode()+'/rewards/claimed/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(err) {
+            cb(err)
+        })
+    },
     generateCommentTree: (root, author, link) => {
         var replies = []
         var content = null
