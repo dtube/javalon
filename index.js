@@ -22,6 +22,19 @@ var avalon = {
     init: (config) => {
         avalon.config = config
     },
+    getBlock: (number, cb) => {
+        fetch(avalon.randomNode()+'/block/'+number, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
     getAccount: (name, cb) => {
         fetch(avalon.randomNode()+'/account/'+name, {
             method: 'get',
@@ -319,6 +332,19 @@ var avalon = {
     },
     getSchedule: (cb) => {
         fetch(avalon.randomNode()+'/schedule', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getSupply: (cb) => {
+        fetch(avalon.randomNode()+'/supply', {
             method: 'get',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
