@@ -165,7 +165,7 @@ var avalon = {
             cb(err)
         })
     },
-    getRewardsPending: (name, cb) => {
+    getPendingRewards: (name, cb) => {
         fetch(avalon.randomNode()+'/rewards/pending/'+name, {
             method: 'get',
             headers: {
@@ -178,7 +178,7 @@ var avalon = {
             cb(err)
         })
     },
-    getRewardsClaimed: (name, cb) => {
+    getClaimedRewards: (name, cb) => {
         fetch(avalon.randomNode()+'/rewards/claimed/'+name, {
             method: 'get',
             headers: {
@@ -191,7 +191,7 @@ var avalon = {
             cb(err)
         })
     },
-    getRewardsClaimable: (name, cb) => {
+    getClaimableRewards: (name, cb) => {
         fetch(avalon.randomNode()+'/rewards/claimable/'+name, {
             method: 'get',
             headers: {

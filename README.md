@@ -134,21 +134,21 @@ javalon.getClaimedVotesByAccount('alice', 0, (err, votes) => {
 
 ### GET pending rewards by account
 ```
-javalon.getRewardsPending('alice', (err, votes) => {
+javalon.getPendingRewards('alice', (err, votes) => {
     console.log(err, votes)
 })
 ```
 
 ### GET claimed rewards by account
 ```
-javalon.getRewardsClaimed('alice', (err, votes) => {
+javalon.getClaimedRewards('alice', (err, votes) => {
     console.log(err, votes)
 })
 ```
 
 ### GET claimable rewards by account
 ```
-javalon.getRewardsClaimable('alice', (err, votes) => {
+javalon.getClaimableRewards('alice', (err, votes) => {
     console.log(err, votes)
 })
 ```
