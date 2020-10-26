@@ -62,7 +62,46 @@ var avalon = {
         })
     },
     getVotesByAccount: (name, lastTs, cb) => {
-        fetch(avalon.randomNode()+'/votes/'+name+'/'+lastTs, {
+        fetch(avalon.randomNode()+'/votes/all/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getPendingVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/pending/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getClaimableVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/claimable/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getClaimedVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/claimed/'+name+'/'+lastTs, {
             method: 'get',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -126,7 +165,7 @@ var avalon = {
             cb(err)
         })
     },
-    getRewardsPending: (name, cb) => {
+    getPendingRewards: (name, cb) => {
         fetch(avalon.randomNode()+'/rewards/pending/'+name, {
             method: 'get',
             headers: {
@@ -139,8 +178,21 @@ var avalon = {
             cb(err)
         })
     },
-    getRewardsClaimed: (name, cb) => {
+    getClaimedRewards: (name, cb) => {
         fetch(avalon.randomNode()+'/rewards/claimed/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(err) {
+            cb(err)
+        })
+    },
+    getClaimableRewards: (name, cb) => {
+        fetch(avalon.randomNode()+'/rewards/claimable/'+name, {
             method: 'get',
             headers: {
                 'Accept': 'application/json, text/plain, */*',

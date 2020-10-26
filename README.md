@@ -104,6 +104,55 @@ javalon.getNotifications('alice', (err, contents) => {
 })
 ```
 
+### GET all votes by account
+```
+javalon.getVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET pending votes by account
+```
+javalon.getPendingVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimable votes by account
+```
+javalon.getClaimableVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimed votes by account
+```
+javalon.getClaimedVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET pending rewards by account
+```
+javalon.getPendingRewards('alice', (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimed rewards by account
+```
+javalon.getClaimedRewards('alice', (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimable rewards by account
+```
+javalon.getClaimableRewards('alice', (err, votes) => {
+    console.log(err, votes)
+})
+```
+
 ## POST API
 
 To send a transaction to the network, you will need multiple steps. First you need to define your transaction and sign it.
