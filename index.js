@@ -22,6 +22,19 @@ var avalon = {
     init: (config) => {
         avalon.config = config
     },
+    getBlockchainHeight: (cb) => {
+        fetch(avalon.randomNode()+'/count', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
     getBlock: (number, cb) => {
         fetch(avalon.randomNode()+'/block/'+number, {
             method: 'get',
