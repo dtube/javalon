@@ -1,19 +1,52 @@
 var CryptoJS = require('crypto-js')
+var eccrypto = require('eccrypto')
 var randomBytes = require('randombytes')
-const secp256k1 = require('secp256k1')
-const bs58 = require('bs58')
-const GrowInt = require('growint')
-const fetch = require('node-fetch')
+var secp256k1 = require('secp256k1')
+var bs58 = require('bs58')
+var GrowInt = require('growint')
+var fetch = require('node-fetch')
+var bwGrowth = 10000000
+var vtGrowth = 360000000
+
+function status(response) {   
+    if (response.ok)
+        return response
+    return response.json().then(res => Promise.reject(res))
+}
 
 var avalon = {
     config: {
-        //api: ['https://api.avalon.wtf'],
-        api: ['https://bran.nannal.com'],
-        //api: ['http://192.168.0.24:3001'],
+        api: ['https://avalon.d.tube:443'],
         //api: ['http://127.0.0.1:3002']
     },
     init: (config) => {
         avalon.config = config
+    },
+    getBlockchainHeight: (cb) => {
+        fetch(avalon.randomNode()+'/count', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getBlock: (number, cb) => {
+        fetch(avalon.randomNode()+'/block/'+number, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
     },
     getAccount: (name, cb) => {
         fetch(avalon.randomNode()+'/account/'+name, {
@@ -37,6 +70,60 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/all/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getPendingVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/pending/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getClaimableVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/claimable/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getClaimedVotesByAccount: (name, lastTs, cb) => {
+        fetch(avalon.randomNode()+'/votes/claimed/'+name+'/'+lastTs, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getAccounts: (names, cb) => {
@@ -48,6 +135,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getContent: (name, link, cb) => {
@@ -57,8 +146,10 @@ var avalon = {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             }
-        }).then(res => res.json()).then(function(res) {
+        }).then(status).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(err) {
+            cb(err)
         })
     },
     getFollowing: (name, cb) => {
@@ -70,6 +161,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(err) {
+            cb(err)
         })
     },
     getFollowers: (name, cb) => {
@@ -81,6 +174,47 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(err) {
+            cb(err)
+        })
+    },
+    getPendingRewards: (name, cb) => {
+        fetch(avalon.randomNode()+'/rewards/pending/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(err) {
+            cb(err)
+        })
+    },
+    getClaimedRewards: (name, cb) => {
+        fetch(avalon.randomNode()+'/rewards/claimed/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(err) {
+            cb(err)
+        })
+    },
+    getClaimableRewards: (name, cb) => {
+        fetch(avalon.randomNode()+'/rewards/claimable/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(err) {
+            cb(err)
         })
     },
     generateCommentTree: (root, author, link) => {
@@ -123,6 +257,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else
             fetch(avalon.randomNode()+'/blog/'+username+'/'+author+'/'+link, {
@@ -133,6 +269,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
 
     },
@@ -146,6 +284,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else
             fetch(avalon.randomNode()+'/new/'+author+'/'+link, {
@@ -156,6 +296,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
 
     },
@@ -169,6 +311,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else
             fetch(avalon.randomNode()+'/hot/'+author+'/'+link, {
@@ -179,6 +323,35 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
+            })
+        
+    },
+    getTrendingDiscussions: (author, link, cb) => {
+        if (!author && !link) 
+            fetch(avalon.randomNode()+'/trending', {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json()).then(function(res) {
+                cb(null, res)
+            }).catch(function(error) {
+                cb(error)
+            })
+        else 
+            fetch(avalon.randomNode()+'/trending/'+author+'/'+link, {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json()).then(function(res) {
+                cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
 
     },
@@ -192,6 +365,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
         else
             fetch(avalon.randomNode()+'/feed/'+username+'/'+author+'/'+link, {
@@ -202,6 +377,8 @@ var avalon = {
                 }
             }).then(res => res.json()).then(function(res) {
                 cb(null, res)
+            }).catch(function(error) {
+                cb(error)
             })
 
     },
@@ -214,6 +391,8 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getRewardPool: (cb) => {
@@ -236,6 +415,21 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getSupply: (cb) => {
+        fetch(avalon.randomNode()+'/supply', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     getLeaders: (cb) => {
@@ -247,6 +441,34 @@ var avalon = {
             }
         }).then(res => res.json()).then(function(res) {
             cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getRewardPool: (cb) => {
+        fetch(avalon.randomNode()+'/rewardpool', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
+        })
+    },
+    getRewards: (name, cb) => {
+        fetch(avalon.randomNode()+'/distributed/'+name, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(function(res) {
+            cb(null, res)
+        }).catch(function(error) {
+            cb(error)
         })
     },
     keypair: () => {
@@ -287,20 +509,35 @@ var avalon = {
         return tx
     },
     sendTransaction: (tx, cb) => {
-        avalon.sendRawTransaction(tx, function(error, headBlock) {
-            if (error)
-                cb(error)
-            else
-                setTimeout(function() {
-                    avalon.verifyTransaction(tx, headBlock, 5, function(error, block) {
-                        if (error) console.log(error)
-                        else cb(null, block)
-                    })
-                }, 1500)
-
+        // sends a transaction to a node
+        // waits for the transaction to be included in a block
+        // 200 with head block number if confirmed
+        // 408 if timeout
+        // 500 with error if transaction is invalid
+        fetch(avalon.randomNode()+'/transactWaitConfirm', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tx)
+        }).then(function(res) {
+            if (res.status === 500 || res.status === 408) 
+                res.json().then(function(err) {
+                    cb(err)
+                })
+            else if (res.status === 404)
+                cb({error: 'Avalon API is down'})
+            else 
+                res.text().then(function(headBlock) {
+                    cb(null, parseInt(headBlock))
+                })
         })
     },
     sendRawTransaction: (tx, cb) => {
+        // sends the transaction to a node
+        // 200 with head block number if transaction is valid and node added it to mempool
+        // 500 with error if transaction is invalid
         fetch(avalon.randomNode()+'/transact', {
             method: 'post',
             headers: {
@@ -317,8 +554,20 @@ var avalon = {
                 res.text().then(function(headBlock) {
                     cb(null, parseInt(headBlock))
                 })
-
-
+        })
+    },
+    sendTransactionDeprecated: (tx, cb) => {
+        // old and bad way of checking if a transaction is confirmed in a block
+        avalon.sendRawTransaction(tx, function(error, headBlock) {
+            if (error) 
+                cb(error)
+            else 
+                setTimeout(function() {
+                    avalon.verifyTransaction(tx, headBlock, 5, function(error, block) {
+                        if (error) console.log(error)
+                        else cb(null, block)
+                    })
+                }, 1500)
         })
     },
     verifyTransaction: (tx, headBlock, retries, cb) => {
@@ -358,17 +607,81 @@ var avalon = {
 
         })
     },
+    encrypt: (pub, message, ephemPriv, cb) => {
+        // if no ephemPriv is passed, a new random key is generated
+        if (!cb) {
+            cb = ephemPriv
+            ephemPriv = avalon.keypair().priv
+        }
+        try {
+            if (ephemPriv)
+                ephemPriv = bs58.decode(ephemPriv)
+            var pubBuffer = bs58.decode(pub)
+            eccrypto.encrypt(pubBuffer, Buffer.from(message), {
+                ephemPrivateKey: ephemPriv
+            }).then(function(encrypted) {
+                // reducing the encrypted buffers into base 58
+                encrypted.iv = bs58.encode(encrypted.iv)
+                // compress the sender's public key to compressed format
+                // shortens the encrypted string length
+                encrypted.ephemPublicKey = secp256k1.publicKeyConvert(encrypted.ephemPublicKey, true)
+                encrypted.ephemPublicKey = bs58.encode(encrypted.ephemPublicKey)
+                encrypted.ciphertext = bs58.encode(encrypted.ciphertext)
+                encrypted.mac = bs58.encode(encrypted.mac)
+                encrypted = [
+                    encrypted.iv,
+                    encrypted.ephemPublicKey,
+                    encrypted.ciphertext,
+                    encrypted.mac
+                ]
+                
+                // adding the _ separator character
+                encrypted = encrypted.join('_')
+                cb(null, encrypted)
+            }).catch(function(error) {
+                cb(error)
+            })
+        } catch (error) {
+            cb(error)
+        }
+    },
+    decrypt: (priv, encrypted, cb) => {
+        try {
+            // converting the encrypted string to an array of base58 encoded strings
+            encrypted = encrypted.split('_')
+            
+            // then to an object with the correct property names
+            var encObj = {}
+            encObj.iv = bs58.decode(encrypted[0])
+            encObj.ephemPublicKey = bs58.decode(encrypted[1])
+            encObj.ephemPublicKey = secp256k1.publicKeyConvert(encObj.ephemPublicKey, false)
+            encObj.ciphertext = bs58.decode(encrypted[2])
+            encObj.mac = bs58.decode(encrypted[3])
+
+            // and we decode it with our private key
+            var privBuffer = bs58.decode(priv)
+            eccrypto.decrypt(privBuffer, encObj).then(function(decrypted) {
+                cb(null, decrypted.toString())
+            }).catch(function(error) {
+                cb(error)
+            })
+        } catch (error) {
+            cb(error)
+        }
+    },
     randomNode: () => {
         var nodes = avalon.config.api
         if (typeof nodes === 'string') return nodes
         else return nodes[Math.floor(Math.random()*nodes.length)]
     },
     votingPower: (account) => {
-        return new GrowInt(account.vt, {growth:account.balance/(3600000)})
-            .grow(new Date().getTime()).v
+        return new GrowInt(account.vt, {
+            growth:account.balance/(vtGrowth),
+            max: account.maxVt
+        }).grow(new Date().getTime()).v
     },
     bandwidth: (account) => {
-        return new GrowInt(account.bw, {growth:account.balance/(60000), max:1048576})
+        return new GrowInt(account.bw, {growth:account.balance/(bwGrowth), max:256000})
             .grow(new Date().getTime()).v
     },
     TransactionType: {
@@ -388,8 +701,11 @@ var avalon = {
         PROMOTED_COMMENT: 13,
         TRANSFER_VT: 14,
         TRANSFER_BW: 15,
-
+        LIMIT_VT: 16,
+        CLAIM_REWARD: 17,
+        ENABLE_NODE: 18
     }
 }
 
+if (typeof window != 'undefined') window.javalon = avalon
 module.exports = avalon

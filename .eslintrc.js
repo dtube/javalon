@@ -19,7 +19,8 @@ module.exports = {
         'cache': 'writable',
         'notifications': 'writable',
         'closing': 'writable',
-        'newRankings': 'writable'
+        'newRankings': 'writable',
+        'window': 'writable'
     },
     'parserOptions': {
         'ecmaVersion': 2018

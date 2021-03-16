@@ -1,12 +1,18 @@
 # Javalon
 
+## Install
+#### Require style
 Install with `npm install --save javalon` inside your project. Then just
-
 ```
 const javalon = require('javalon')
 ```
+#### CDN style
+If you are working in the browser and want to load javalon from a CDN:
+```
+<script src="https://unpkg.com/javalon/bin/javalon.min.js"></script>
+```
 
-By default, javalon hits on the main avalon testnet. You can eventually make javalon hit on your local node or any avalon node like so:
+By default, javalon hits on the main avalon testnet (https://avalon.d.tube). You can eventually make javalon hit on your local node or any avalon node like so:
 
 ```
 javalon.init({api: 'http://localhost:3001'})
@@ -95,6 +101,55 @@ javalon.getFeedDiscussions('alice', null, null, (err, contents) => {
 ```
 javalon.getNotifications('alice', (err, contents) => {
     console.log(err, contents)
+})
+```
+
+### GET all votes by account
+```
+javalon.getVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET pending votes by account
+```
+javalon.getPendingVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimable votes by account
+```
+javalon.getClaimableVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimed votes by account
+```
+javalon.getClaimedVotesByAccount('alice', 0, (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET pending rewards by account
+```
+javalon.getPendingRewards('alice', (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimed rewards by account
+```
+javalon.getClaimedRewards('alice', (err, votes) => {
+    console.log(err, votes)
+})
+```
+
+### GET claimable rewards by account
+```
+javalon.getClaimableRewards('alice', (err, votes) => {
+    console.log(err, votes)
 })
 ```
 
