@@ -703,7 +703,8 @@ var avalon = {
         TRANSFER_BW: 15,
         LIMIT_VT: 16,
         CLAIM_REWARD: 17,
-        ENABLE_NODE: 18
+        ENABLE_NODE: 18,
+        TIPPED_VOTE: 19
     }
 }
 
