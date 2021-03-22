@@ -1,6 +1,6 @@
 {
   "name": "javalon",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "javascript api for the avalon blockchain",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "growint": "^1.0.1",
     "node-fetch": "^2.6.0",
     "randombytes": "^2.1.0",
-    "secp256k1": "^3.7.1"
+    "secp256k1": "^4.0.2"
   },
   "repository": {
     "type": "git",

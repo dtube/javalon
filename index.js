@@ -1,20 +1,14 @@
-var CryptoJS = require('crypto-js')
-var eccrypto = require('eccrypto')
-var randomBytes = require('randombytes')
-var secp256k1 = require('secp256k1')
-var bs58 = require('bs58')
-var GrowInt = require('growint')
-var fetch = require('node-fetch')
-var bwGrowth = 10000000
-var vtGrowth = 360000000
+const CryptoJS = require('crypto-js')
+const eccrypto = require('eccrypto')
+const randomBytes = require('randombytes')
+const secp256k1 = require('secp256k1')
+const bs58 = require('bs58')
+const GrowInt = require('growint')
+const fetch = require('node-fetch')
+const bwGrowth = 10000000
+const vtGrowth = 360000000
 
-function status(response) {   
-    if (response.ok)
-        return response
-    return response.json().then(res => Promise.reject(res))
-}
-
-var avalon = {
+let avalon = {
     config: {
         api: ['https://avalon.d.tube:443'],
         //api: ['http://127.0.0.1:3002']
@@ -23,199 +17,49 @@ var avalon = {
         avalon.config = config
     },
     getBlockchainHeight: (cb) => {
-        fetch(avalon.randomNode()+'/count', {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/count',cb)
     },
     getBlock: (number, cb) => {
-        fetch(avalon.randomNode()+'/block/'+number, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/block/'+number,cb)
     },
     getAccount: (name, cb) => {
-        fetch(avalon.randomNode()+'/account/'+name, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/account/'+name,cb)
     },
     getAccountHistory: (name, lastBlock, cb) => {
-        fetch(avalon.randomNode()+'/history/'+name+'/'+lastBlock, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/history/'+name+'/'+lastBlock,cb)
     },
     getVotesByAccount: (name, lastTs, cb) => {
-        fetch(avalon.randomNode()+'/votes/all/'+name+'/'+lastTs, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/votes/all/'+name+'/'+lastTs,cb)
     },
     getPendingVotesByAccount: (name, lastTs, cb) => {
-        fetch(avalon.randomNode()+'/votes/pending/'+name+'/'+lastTs, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/votes/pending/'+name+'/'+lastTs,cb)
     },
     getClaimableVotesByAccount: (name, lastTs, cb) => {
-        fetch(avalon.randomNode()+'/votes/claimable/'+name+'/'+lastTs, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/votes/claimable/'+name+'/'+lastTs,cb)
     },
     getClaimedVotesByAccount: (name, lastTs, cb) => {
-        fetch(avalon.randomNode()+'/votes/claimed/'+name+'/'+lastTs, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/votes/claimed/'+name+'/'+lastTs,cb)
     },
     getAccounts: (names, cb) => {
-        fetch(avalon.randomNode()+'/accounts/'+names.join(','), {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/accounts/'+names.join(','),cb)
     },
     getContent: (name, link, cb) => {
-        fetch(avalon.randomNode()+'/content/'+name+'/'+link, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(status).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err)
-        })
+        avalon.get('/content/'+name+'/'+link,cb)
     },
     getFollowing: (name, cb) => {
-        fetch(avalon.randomNode()+'/follows/'+name, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err)
-        })
+        avalon.get('/follows/'+name,cb)
     },
     getFollowers: (name, cb) => {
-        fetch(avalon.randomNode()+'/followers/'+name, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err)
-        })
+        avalon.get('/followers/'+name,cb)
     },
     getPendingRewards: (name, cb) => {
-        fetch(avalon.randomNode()+'/rewards/pending/'+name, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err)
-        })
+        avalon.get('/rewards/pending/'+name,cb)
     },
     getClaimedRewards: (name, cb) => {
-        fetch(avalon.randomNode()+'/rewards/claimed/'+name, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err)
-        })
+        avalon.get('/rewards/claimed/'+name,cb)
     },
     getClaimableRewards: (name, cb) => {
-        fetch(avalon.randomNode()+'/rewards/claimable/'+name, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(err) {
-            cb(err)
-        })
+        avalon.get('/rewards/claimable/'+name,cb)
     },
     generateCommentTree: (root, author, link) => {
         var replies = []
@@ -249,206 +93,54 @@ var avalon = {
     },
     getDiscussionsByAuthor: (username, author, link, cb) => {
         if (!author && !link)
-            fetch(avalon.randomNode()+'/blog/'+username, {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
+            avalon.get('/blog/'+username,cb)
         else
-            fetch(avalon.randomNode()+'/blog/'+username+'/'+author+'/'+link, {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
-
+            avalon.get('/blog/'+username+'/'+author+'/'+link,cb)
     },
     getNewDiscussions: (author, link, cb) => {
         if (!author && !link)
-            fetch(avalon.randomNode()+'/new', {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
+            avalon.get('/new',cb)
         else
-            fetch(avalon.randomNode()+'/new/'+author+'/'+link, {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
-
+            avalon.get('/new/'+author+'/'+link,cb)
     },
     getHotDiscussions: (author, link, cb) => {
         if (!author && !link)
-            fetch(avalon.randomNode()+'/hot', {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
+            avalon.get('/hot',cb)
         else
-            fetch(avalon.randomNode()+'/hot/'+author+'/'+link, {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
-        
+            avalon.get('/hot/'+author+'/'+link,cb)
     },
     getTrendingDiscussions: (author, link, cb) => {
         if (!author && !link) 
-            fetch(avalon.randomNode()+'/trending', {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
+            avalon.get('/trending',cb)
         else 
-            fetch(avalon.randomNode()+'/trending/'+author+'/'+link, {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
-
+            avalon.get('/trending/'+author+'/'+link,cb)
     },
     getFeedDiscussions: (username, author, link, cb) => {
         if (!author && !link)
-            fetch(avalon.randomNode()+'/feed/'+username, {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
+            avalon.get('/feed/'+username,cb)
         else
-            fetch(avalon.randomNode()+'/feed/'+username+'/'+author+'/'+link, {
-                method: 'get',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json()).then(function(res) {
-                cb(null, res)
-            }).catch(function(error) {
-                cb(error)
-            })
-
+            avalon.get('/feed/'+username+'/'+author+'/'+link,cb)
     },
     getNotifications: (username, cb) => {
-        fetch(avalon.randomNode()+'/notifications/'+username, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/notifications/'+username,cb)
     },
     getSchedule: (cb) => {
-        fetch(avalon.randomNode()+'/schedule', {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/schedule',cb)
     },
     getSupply: (cb) => {
-        fetch(avalon.randomNode()+'/supply', {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/supply',cb)
     },
     getLeaders: (cb) => {
-        fetch(avalon.randomNode()+'/allminers', {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/allminers',cb)
     },
     getRewardPool: (cb) => {
-        fetch(avalon.randomNode()+'/rewardpool', {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(function(res) {
-            cb(null, res)
-        }).catch(function(error) {
-            cb(error)
-        })
+        avalon.get('/rewardpool',cb)
     },
     getRewards: (name, cb) => {
-        fetch(avalon.randomNode()+'/distributed/'+name, {
+        avalon.get('/distributed/'+name,cb)
+    },
+    get: (method,cb) => {
+        fetch(avalon.randomNode()+method, {
             method: 'get',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -493,7 +185,7 @@ var avalon = {
         // hash the transaction
         tx.hash = CryptoJS.SHA256(JSON.stringify(tx)).toString()
         // sign the transaction
-        var signature = secp256k1.sign(Buffer.from(tx.hash, 'hex'), bs58.decode(privKey))
+        let signature = secp256k1.ecdsaSign(Buffer.from(tx.hash, 'hex'), bs58.decode(privKey))
         tx.signature = bs58.encode(signature.signature)
         return tx
     },
