@@ -5,16 +5,15 @@ const secp256k1 = require('secp256k1')
 const bs58 = require('bs58')
 const GrowInt = require('growint')
 const fetch = require('node-fetch')
-const bwGrowth = 10000000
-const vtGrowth = 360000000
 
 let avalon = {
     config: {
-        api: ['https://avalon.d.tube:443'],
-        //api: ['http://127.0.0.1:3002']
+        api: ['https://avalon.d.tube'],
+        bwGrowth: 10000000,
+        vtGrowth: 360000000
     },
     init: (config) => {
-        avalon.config = config
+        avalon.config = Object.assign(avalon.config,config)
     },
     getBlockchainHeight: (cb) => {
         avalon.get('/count',cb)
@@ -357,12 +356,12 @@ let avalon = {
     },
     votingPower: (account) => {
         return new GrowInt(account.vt, {
-            growth:account.balance/(vtGrowth),
+            growth:account.balance/(avalon.config.vtGrowth),
             max: account.maxVt
         }).grow(new Date().getTime()).v
     },
     bandwidth: (account) => {
-        return new GrowInt(account.bw, {growth:account.balance/(bwGrowth), max:256000})
+        return new GrowInt(account.bw, {growth:account.balance/(avalon.config.bwGrowth), max:256000})
             .grow(new Date().getTime()).v
     },
     TransactionType: {
