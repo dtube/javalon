@@ -188,6 +188,30 @@ let avalon = {
         tx.signature = bs58.encode(signature.signature)
         return tx
     },
+    signMultisig: (privKeys = [], sender, tx) => {
+        if (typeof tx !== 'object')
+            try {
+                tx = JSON.parse(tx)
+            } catch(e) {
+                console.log('invalid transaction')
+                return
+            }
+
+        if (!tx.sender)
+            tx.sender = sender
+        if (!tx.ts)
+            tx.ts = new Date().getTime()
+        if (!tx.hash)
+            tx.hash = CryptoJS.SHA256(JSON.stringify(tx)).toString()
+        if (!tx.signature || !Array.isArray(tx.signature))
+            tx.signature = []
+        
+        for (let k in privKeys) {
+            let sign = secp256k1.ecdsaSign(Buffer.from(tx.hash, 'hex'), bs58.decode(privKeys[k]))
+            tx.signature.push([bs58.encode(sign.signature),sign.recid])
+        }
+        return tx
+    },
     sendTransaction: (tx, cb) => {
         // sends a transaction to a node
         // waits for the transaction to be included in a block
@@ -384,7 +408,10 @@ let avalon = {
         LIMIT_VT: 16,
         CLAIM_REWARD: 17,
         ENABLE_NODE: 18,
-        TIPPED_VOTE: 19
+        TIPPED_VOTE: 19,
+        NEW_WEIGHTED_KEY: 20,
+        SET_SIG_THRESHOLD: 21,
+        SET_PASSWORD_WEIGHT: 22
     }
 }
 
