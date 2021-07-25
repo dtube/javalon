@@ -5,6 +5,8 @@ const secp256k1 = require('secp256k1')
 const bs58 = require('bs58')
 const GrowInt = require('growint')
 const fetch = require('node-fetch')
+const bip39 = require('bip39')
+const bip32 = require('bip32')
 
 let avalon = {
     config: {
@@ -161,6 +163,17 @@ let avalon = {
         return {
             pub: bs58.encode(pub),
             priv: bs58.encode(priv)
+        }
+    },
+    generateMnemonic: () => {
+        return bip39.generateMnemonic()
+    },
+    mnemonicToKeyPair: (mnemonic) => {
+        const seed = bip39.mnemonicToSeedSync(mnemonic)
+        const bip32key = bip32.fromSeed(seed)
+        return {
+            pub: bs58.encode(bip32key.publicKey),
+            priv: bs58.encode(bip32key.privateKey)
         }
     },
     privToPub: (priv) => {
