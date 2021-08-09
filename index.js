@@ -398,7 +398,7 @@ let avalon = {
         }).grow(new Date().getTime()).v
     },
     bandwidth: (account) => {
-        return new GrowInt(account.bw, {growth:account.balance/(avalon.config.bwGrowth), max:256000})
+        return new GrowInt(account.bw, {growth: Math.max(account.baseBwGrowth || 0,account.balance)/(avalon.config.bwGrowth), max:256000})
             .grow(new Date().getTime()).v
     },
     TransactionType: {
