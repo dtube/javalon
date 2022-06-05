@@ -391,6 +391,15 @@ let avalon = {
         if (typeof nodes === 'string') return nodes
         else return nodes[Math.floor(Math.random()*nodes.length)]
     },
+    availableBalance: (account) => {
+        if (!account.voteLock)
+            return account.balance
+        let newLock = 0
+        for (let v in account.proposalVotes)
+            if (account.proposalVotes[v].end > new Date().getTime() && account.proposalVotes[v].amount - account.proposalVotes[v].bonus > newLock)
+                newLock = account.proposalVotes[v].amount - account.proposalVotes[v].bonus
+        return account.balance - newLock
+    },
     votingPower: (account) => {
         return new GrowInt(account.vt, {
             growth:account.balance/(avalon.config.vtGrowth),
@@ -424,7 +433,24 @@ let avalon = {
         TIPPED_VOTE: 19,
         NEW_WEIGHTED_KEY: 20,
         SET_SIG_THRESHOLD: 21,
-        SET_PASSWORD_WEIGHT: 22
+        SET_PASSWORD_WEIGHT: 22,
+        UNSET_SIG_THRESHOLD: 23,
+        NEW_ACCOUNT_WITH_BW: 24,
+        PLAYLIST_JSON: 25,
+        PLAYLIST_PUSH: 26,
+        PLAYLIST_POP: 27,
+        COMMENT_EDIT: 28,
+        ACCOUNT_AUTHORIZE: 29,
+        ACCOUNT_REVOKE: 30,
+        FUND_REQUEST_CREATE: 31,
+        FUND_REQUEST_CONTRIB: 32,
+        FUND_REQUEST_WORK: 33,
+        FUND_REQUEST_WORK_REVIEW: 34,
+        PROPOSAL_VOTE: 35,
+        PROPOSAL_EDIT: 36,
+        CHAIN_UPDATE_CREATE: 37,
+        MD_QUEUE: 38,
+        MD_SIGN: 39
     }
 }
 
